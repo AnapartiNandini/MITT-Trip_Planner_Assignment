@@ -1,10 +1,12 @@
 let mapboxApiKey = "pk.eyJ1IjoibmFuZGluaS1hIiwiYSI6ImNrbW1iN2xqdjFqYmYycG80bmo2bDYwN24ifQ.GQN5FI2XaZYpt8KKxYcMQQ";
+let transitApiKey = "p7qbH-VgW-2M5BRlkbwv";
 let originForm = document.querySelector(".origin-form");
 let originInput = document.querySelector(".origin-form input");
 let destinationForm = document.querySelector(".destination-form");
 let destinationInput = document.querySelector(".destination-form input");
 let origins = document.querySelector(".origins");
 let destinations = document.querySelector(".destinations");
+let planTripBtn = document.querySelector(".plan-trip");
 let originLong;
 let originLat;
 let destinationLong;
@@ -37,6 +39,12 @@ destinationForm.onclick = function () {
   if (originInput.value.length > 0) {
     destinations.innerHTML = "";
     destinationInput.value = "";
+  }
+}
+
+planTripBtn.onclick = function () {
+  if (originLong !== null && originLat !== null && destinationLong !== null && destingationLat !== null) {
+    getRoute(originLong, originLat, destinationLong, destinationLat);
   }
 }
 
@@ -90,4 +98,10 @@ async function getDestinationLocations(searchedDestination) {
       destinationLat = destinationElement.dataset.lat;
     }
   }
+}
+
+async function getRoute (originLong, originLat, destinationLong, destinationLat) {
+  const routeResponse = await fetch (`https://api.winnipegtransit.com/v2/trip-planner.json?api-key=${transitApiKey}&origin=geo/${originLat},${originLong}&destination=geo/${destinationLat},${destinationLong}`);
+  const routeData = await routeResponse.json();
+  console.log(routeData);
 }
