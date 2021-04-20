@@ -2,7 +2,6 @@ let mapboxApiKey = "pk.eyJ1IjoibmFuZGluaS1hIiwiYSI6ImNrbW1iN2xqdjFqYmYycG80bmo2b
 let originForm = document.querySelector(".origin-form");
 let originInput = document.querySelector(".origin-form input");
 let origins = document.querySelector(".origins");
-
 origins.innerHTML = "";
 destinations.innerHTML = "";
 
