@@ -103,5 +103,75 @@ async function getDestinationLocations(searchedDestination) {
 async function getRoute (originLong, originLat, destinationLong, destinationLat) {
   const routeResponse = await fetch (`https://api.winnipegtransit.com/v2/trip-planner.json?api-key=${transitApiKey}&origin=geo/${originLat},${originLong}&destination=geo/${destinationLat},${destinationLong}`);
   const routeData = await routeResponse.json();
+  let hourArray = [];
+  let minutesArray = [];
+  let durationsArray = [];
+  let minHour;
+  let minMinutes;
+  let minDuration;
+  
+  routeData.plans.forEach(route => {
+    let date = new Date(route.times.end);
+    let hours = date.getHours();
+    let minutes;
+    if (hours === minHour) {
+      minutes = date.getMinutes();
+      minutesArray.push(minutes);
+    }
+    hourArray.push(hours);
+  });
+
+  minHour = Math.min(...hourArray);
+  console.log(minHour);
+
+  routeData.plans.forEach(route => {
+    let date = new Date(route.times.end);
+    let hours = date.getHours();
+    let minutes;
+    if (hours === minHour) {
+      minutes = date.getMinutes();
+      minutesArray.push(minutes);
+    }
+  });
+
+  minMinutes = Math.min(...minutesArray);
+  console.log(minMinutes);
+
+  routeData.plans.forEach(route => {
+    let date = new Date(route.times.end);
+    let hours = date.getHours();
+    let minutes;
+    let durations;
+    if (hours === minHour) {
+      minutes = date.getMinutes();
+      if (minMinutes === minMinutes) {
+        durations = route.times.durations.total;
+        durationsArray.push(durations);
+      }
+    }
+  });
+
+  minDuration = Math.min(...durationsArray);
+  console.log(minDuration); 
+
+  routeData.plans.forEach(route => {
+    let date = new Date(route.times.end);
+    let hours = date.getHours();
+    let minutes;
+    let durations;
+    if (hours === minHour) {
+      minutes = date.getMinutes();
+      if (minMinutes === minMinutes) {
+        durations = route.times.durations.total;
+        if (durations === minDuration) {
+          
+        }
+      }
+    }
+  });
+
+  // let date = new Date("2021-04-19T20:12:00");
+  // let time = date.getHours();
   console.log(routeData);
+  // console.log(time);
 }
