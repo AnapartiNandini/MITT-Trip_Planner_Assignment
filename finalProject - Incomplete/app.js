@@ -5,6 +5,10 @@ let destinationForm = document.querySelector(".destination-form");
 let destinationInput = document.querySelector(".destination-form input");
 let origins = document.querySelector(".origins");
 let destinations = document.querySelector(".destinations");
+let originLong;
+let originLat;
+let destinationLong;
+let destingationLat;
 origins.innerHTML = "";
 destinations.innerHTML = "";
 
@@ -77,4 +81,13 @@ async function getDestinationLocations(searchedDestination) {
   </li>
     `);
   });
+
+  destinations.onclick = e => {
+    let destinationElement = e.target.closest('li');
+    if (destinationElement !== null) {
+      destinationElement.className = "selected";
+      destinationLong = destinationElement.dataset.long;
+      destinationLat = destinationElement.dataset.lat;
+    }
+  }
 }
