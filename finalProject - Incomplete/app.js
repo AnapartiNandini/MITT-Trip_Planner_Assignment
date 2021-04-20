@@ -51,6 +51,15 @@ async function getOriginLocations(searchedOrigin) {
       </li>
     `);
   });
+
+  origins.onclick = e => {
+    let originElement = e.target.closest('li');
+    if (originElement !== null) {
+      originElement.className = "selected";
+      originLong = originElement.dataset.long;
+      originLat = originElement.dataset.lat;
+    }
+  }
 }
 
 async function getDestinationLocations(searchedDestination) {
