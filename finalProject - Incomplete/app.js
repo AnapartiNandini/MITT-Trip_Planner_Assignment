@@ -162,7 +162,6 @@ async function getRoute(originLong, originLat, destinationLong, destinationLat) 
     let minutes;
     let durations;
     let getSegmentDuration;
-    let myTripText;
     let icon;
     let stepInfo;
 
@@ -188,11 +187,11 @@ async function getRoute(originLong, originLat, destinationLong, destinationLat) 
             endTime = `${hours - 12}:${date.getMinutes()}:${date.getSeconds()} PM`;
           }
 
-          myTripText = ("beforeend", `
+          myTripText = `
           <li><span class="material-icons">exit_to_app</span> Depart at ${startTime}.</li>
-          `);
+          `;
 
-          route.segments.forEach(function (segment) {
+          route.segments.forEach(function (segment, index) {
             getSegmentDuration = segment.times.durations.total
 
             if (segment.type === "walk") {
@@ -212,9 +211,9 @@ async function getRoute(originLong, originLat, destinationLong, destinationLat) 
               stepInfo = `Transfer from stop #${segment.from.stop.key} - ${segment.from.stop.name} to stop #${segment.to.stop.key} - ${segment.to.stop.name}`;
             }
 
-              myTripText += `<li>${icon}${stepInfo}<li>`
+              myTripText += `<li>${icon}${stepInfo}<li>`;
           });
-          myTrip.innerHTML = myTripText;
+          console.log(myTripText);
         }
       }
     }
