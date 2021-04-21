@@ -7,12 +7,14 @@ let destinationInput = document.querySelector(".destination-form input");
 let origins = document.querySelector(".origins");
 let destinations = document.querySelector(".destinations");
 let planTripBtn = document.querySelector(".plan-trip");
+let myTrip = document.querySelector(".my-trip");
 let originLong;
 let originLat;
 let destinationLong;
 let destingationLat;
 origins.innerHTML = "";
 destinations.innerHTML = "";
+myTrip.innerHTML = "";
 
 originForm.onsubmit = e => {
   e.preventDefault();
@@ -100,8 +102,8 @@ async function getDestinationLocations(searchedDestination) {
   }
 }
 
-async function getRoute (originLong, originLat, destinationLong, destinationLat) {
-  const routeResponse = await fetch (`https://api.winnipegtransit.com/v2/trip-planner.json?api-key=${transitApiKey}&origin=geo/${originLat},${originLong}&destination=geo/${destinationLat},${destinationLong}`);
+async function getRoute(originLong, originLat, destinationLong, destinationLat) {
+  const routeResponse = await fetch(`https://api.winnipegtransit.com/v2/trip-planner.json?api-key=${transitApiKey}&origin=geo/${originLat},${originLong}&destination=geo/${destinationLat},${destinationLong}`);
   const routeData = await routeResponse.json();
   let hourArray = [];
   let minutesArray = [];
@@ -109,8 +111,7 @@ async function getRoute (originLong, originLat, destinationLong, destinationLat)
   let minHour;
   let minMinutes;
   let minDuration;
-  let icon;
-  
+
   routeData.plans.forEach(route => {
     let date = new Date(route.times.end);
     let hours = date.getHours();
@@ -153,29 +154,67 @@ async function getRoute (originLong, originLat, destinationLong, destinationLat)
   });
 
   minDuration = Math.min(...durationsArray);
-  console.log(minDuration); 
+  console.log(minDuration);
 
   routeData.plans.forEach(route => {
     let date = new Date(route.times.end);
     let hours = date.getHours();
     let minutes;
     let durations;
+    let getSegmentDuration;
+    let icon;
+    let stepInfo;
+
     if (hours === minHour) {
       minutes = date.getMinutes();
       if (minMinutes === minMinutes) {
         durations = route.times.durations.total;
         if (durations === minDuration) {
+          let startDate = new Date(route.times.start);
+          let startHour = startDate.getHours();
+          let startTime;
+          let endTime;
+
+          if (startHour <= 12) {
+            startTime = `${startHour}:${startDate.getMinutes()}:${startDate.getSeconds()} AM`;
+          } else {
+            startTime = `${startHour - 12}:${startDate.getMinutes()}:${startDate.getSeconds()} PM`;
+          }
+
+          if (hours <= 12) {
+            endTime = `${hours}:${date.getMinutes()}:${date.getSeconds()} AM`;
+          } else {
+            endTime = `${hours - 12}:${date.getMinutes()}:${date.getSeconds()} PM`;
+          }
+
+          let myTripText = "";
+
+          //<li><span class="material-icons">exit_to_app</span> Depart at ${startTime}.</li>
+
           route.segments.forEach(segment => {
-            if (segment.type === "walk"){
+            getSegmentDuration = segment.times.durations.total
+
+            if (segment.type === "walk") {
               icon = `<span class="material-icons">directions_walk</span>`;
-            } else if (segment.type === "ride"){
+
+              if (segment.to.stop !== null) {
+                stepInfo = `Walk for ${getSegmentDuration} minutes to stop #${segment.to.stop.key.value} - ${segment.to.stop.name}`
+              } else if (segment.to.stop === null && segment.to.destination !== null) {
+                stepInfo = `Walk for ${getSegmentDuration} to your destination, arriving at ${endTime}`;
+              }
+
+            } else if (segment.type === "ride") {
               icon = `<span class="material-icons">directions_bus</span>`;
-            } else if (segment.type === "transfer"){
+              stepInfo = `Ride the ${segment.route.name} for ${getSegmentDuration} minutes`;
+            } else if (segment.type === "transfer") {
               icon = `<span class="material-icons">transfer_within_a_station</span>`;
+              stepInfo = `Transfer from stop #${segment.from.stop.key} - ${segment.from.stop.name} to stop #${segment.to.stop.key} - ${segment.to.stop.name}`;
             }
 
-            
+              myTripText += `<li>${icon}${stepInfo}<li>`;
           });
+          console.log(myTripText);
+          myTrip.innerHTML = myTripText;
         }
       }
     }
